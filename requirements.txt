@@ -1,0 +1,8 @@
+numpy
+pandas
+torch
+torchvision
+torchaudio
+accelerate
+sentence-transformers
+faiss-cpu
