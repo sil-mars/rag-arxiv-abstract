@@ -27,6 +27,6 @@ python main.py
 
 ## Notes
 
-- V1 baseline — no query expansion or hybrid retrieval
+- V1 baseline 
 - Embeddings and FAISS index are cached on first run
 - Models: BAAI/bge-small-en-v1.5 (embedding), cross-encoder (reranking), Qwen2-7B-Instruct (generation)
