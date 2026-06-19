@@ -6,7 +6,7 @@ End-to-end RAG pipeline with retrieval and cross-encoder reranking over arXiv ab
 
 ## Pipeline
 
-Loader → Embedder → FAISS Index → Retriever → Reranker → Generator
+Loader → Embedder → FAISS Index → Retriever → Generator
 
 ## Dataset
 
