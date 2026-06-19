@@ -1,26 +1,57 @@
-import os
+from Loader import Loader
+from Embedder import Embedding
+from Indexer import Indexer
 from Retriever import Retriever
 from Generator import Generator
+from ContextB import ContextB
 
-os.environ["HF_TOKEN"] = ""
-
-DATA_PATH = "Data/arxiv-metadata-oai-snapshot.json"
-
-test_queries = [
-    "What are the main approaches to transformer models in NLP?",
-    "What problems are graph neural networks used to solve?",
-    "What are the open challenges in quantum computing?",
-]
-
+import os
+import torch
 
 def main():
-    retriever = Retriever(DATA_PATH)
+
+	os.environ["HF_TOKEN"] = ""
+    path = "Data/arxiv-metadata-oai-snapshot.json"
+
+    # 1. LOAD
+    loader = Loader(path)
+    data = loader.read_data()
+
+    # 2. EMBEDDINGS
+    embedder = Embedding()
+
+    if os.path.exists("embedding.npy"):
+        emb = embedder.load("embedding")
+    else:
+        emb = embedder.embed(data)
+        embedder.save(emb, "embedding.npy")
+
+    # 3. INDEX
+    indexer = Indexer()
+
+    if os.path.exists("index.faiss"):
+        indexer.load("index.faiss")
+    else:
+        indexer.build_FAISS_flatcos(emb)
+        indexer.save("index.faiss")
+
+    # 4. RETRIEVER + GENERATOR
+    retriever = Retriever(embedder, indexer, data)
     gen = Generator()
+    contextb = ContextB()
+
+    # 5. TEST
+    test_queries = [
+        "What are transformers in NLP?",
+        "Graph neural networks applications",
+        "Quantum computing challenges"
+    ]
 
     for q in test_queries:
-        docs, scores = retriever.retrieve(q)
+        torch.cuda.empty_cache()
+        docs, scores = retriever.retrieve(q, 3)
 
-        context = "\n\n".join(docs)
+        context = contextb.build(docs)
 
         print("\nQUERY:", q)
         print(gen.generate(context, q))

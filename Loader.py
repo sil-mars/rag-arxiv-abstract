@@ -24,10 +24,23 @@ class Loader:
             item = json.loads(line)
 
             text = self.preprocessing(item)
-            data.append(text)
-            #if len(data) >= 1000:
-            #  break
+
+            chunks = self.chunk(text, 200)
+
+            for c in chunks:
+                data.append({
+                    "text":c,
+                    "title": item["title"],
+                    "category": item["categories"],
+                    "id": item["id"]
+                })
+
     return data
+
+  def chunk(self, text, words_lim=100):
+    words = text.split()
+    res = [" ".join(words[i:i+words_lim]) for i in range(0, len(words), words_lim)]
+    return res
 
   def visualize(self, path):
     data = []

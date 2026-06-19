@@ -6,6 +6,8 @@ class Embedding:
         self.model = SentenceTransformer("BAAI/bge-small-en-v1.5", device="cuda")
     
     def embed(self, texts, batch_size=32): 
+        if isinstance(texts[0], dict):
+            texts = [d["text"] for d in texts]
         return self.model.encode(texts, batch_size=batch_size, show_progress_bar=True)
     
     def save(self, emb, path):

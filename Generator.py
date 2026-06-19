@@ -6,7 +6,7 @@ class Generator:
   def __init__(self):
     model_name = "Qwen/Qwen2-7B-Instruct" 
     self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-    self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", force_download=True) # device_map to handle cpu/gpu
+    self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", force_download=True, low_cpu_mem_usage=True) # device_map to handle cpu/gpu
 
   def generate(self, context, question):
 
@@ -27,22 +27,31 @@ class Generator:
     #  """
 
     prompt = f"""<|im_start|>system
-Answer using ONLY the exact information in the abstracts below. Do not add anything else.<|im_end|>
-<|im_start|>user
-Abstracts:
-{context}
-
-Question: {question}
-
-Answer in 3-5 bullet points using only the abstracts above:<|im_end|>
-<|im_start|>assistant
-- """
+    You are a scientific assistant.
+    
+    RULES:
+    - Use ONLY the provided abstracts.
+    - Do NOT use prior knowledge.
+    - If the answer is not explicitly in the abstracts, say: "Not found in the provided papers."
+    - Do NOT guess or infer.
+    
+    <|im_end|>
+    <|im_start|>user
+    Abstracts:
+    {context}
+    
+    Question: {question}
+    
+    Return only information supported by the abstracts.
+    <|im_end|>
+    <|im_start|>assistant
+    """
 
     inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device) #3 return_tensors in PyTorch
 
     outputs = self.model.generate(
         **inputs,
-        max_new_tokens=200,
+        max_new_tokens=100,
         eos_token_id=self.tokenizer.convert_tokens_to_ids("<|im_end|>"),
         pad_token_id=self.tokenizer.eos_token_id,
         do_sample=False,

@@ -1,16 +1,16 @@
-# RAG System V1 — arXiv Abstracts
+# RAG System V2 — arXiv Abstracts
 
-End-to-end RAG pipeline with retrieval and cross-encoder reranking over arXiv abstracts.
+End-to-end RAG pipeline for semantic search and Q&A over arXiv paper abstracts.
 
 ---
 
 ## Pipeline
 
-Loader → Embedder → FAISS Index → Retriever → Generator
+Loader → Embedder → FAISS Index → Retriever → ContextBuilder → Generator
 
 ## Dataset
 
-[arXiv metadata snapshot](https://www.kaggle.com/datasets/Cornell-University/arxiv) (not included). Place it at `Data/arxiv-metadata-oai-snapshot.json`. Only abstracts are used.
+[arXiv metadata snapshot](https://www.kaggle.com/datasets/Cornell-University/arxiv) (not included). Place it at `Data/arxiv-metadata-oai-snapshot.json`. Only title and abstract are used.
 
 ## Setup
 
@@ -27,6 +27,6 @@ python main.py
 
 ## Notes
 
-- V1 baseline 
+- V2: adds chunking (200-word chunks) and a dedicated ContextBuilder module
 - Embeddings and FAISS index are cached on first run
-- Models: BAAI/bge-small-en-v1.5 (embedding), cross-encoder (reranking), Qwen2-7B-Instruct (generation)
+- Models: BAAI/bge-small-en-v1.5 (embedding), Qwen2-7B-Instruct (generation)
