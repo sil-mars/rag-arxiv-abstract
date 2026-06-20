@@ -10,7 +10,9 @@ End-to-end RAG pipeline for semantic search and Q&A over arXiv paper abstracts.
 | v3 | Loader → Embedder → FAISS → Retriever → Reranker → Generator | Removed chunking (abstracts are self-contained and chunking fragmented them mid-sentence, degrading retrieval and generation quality). Added Reranker (CrossEncoder top-50). Added citation validation. Improved prompt with explicit allowed IDs. Upgraded to `bge-base` embedding model |
 
 ## Dataset
-[arXiv metadata snapshot](https://www.kaggle.com/datasets/Cornell-University/arxiv) (not included). Place it at `net-vol/Data/arxiv-metadata-oai-snapshot.json` or change path. Only id, title and abstract are used.
+[arXiv metadata snapshot](https://www.kaggle.com/datasets/Cornell-University/arxiv) (not included). Only id, title and abstract are used.
+
+Update the dataset path in main.py accordingly.
 
 ## Setup
 pip install -r requirements.txt
