@@ -8,12 +8,17 @@ class Retriever:
         self.indexer = indexer
         self.data = data
 
-    def retrieve(self, question, k=5):
-
+    def retrieve(self, question, k=50):
         query_emb = self.embedder.embed([question])
-
         scores, indexes = self.indexer.search(query_emb, k)
-
-        docs = [self.data[i] for i in indexes[0]]
-
+        
+        # Dedup: queda el chunk con mejor score por paper_id
+        seen_ids = {}
+        for score, idx in zip(scores[0], indexes[0]):
+            doc = self.data[idx]
+            pid = doc["id"]
+            if pid not in seen_ids or score > seen_ids[pid][0]:
+                seen_ids[pid] = (score, doc)
+        
+        docs = [d for _, d in seen_ids.values()]
         return docs, scores

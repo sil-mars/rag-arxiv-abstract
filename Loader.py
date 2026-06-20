@@ -13,7 +13,9 @@ class Loader:
       return text
 
   def preprocessing(self, item):
-    return self.clean_data(item["title"]) + "\n" + self.clean_data(item["abstract"])
+    title = self.clean_data(item["title"])
+    abstract = self.clean_data(item["abstract"])
+    return title + "\n" + abstract
 
   def read_data(self):
     data = []
@@ -25,11 +27,18 @@ class Loader:
 
             text = self.preprocessing(item)
 
-            chunks = self.chunk(text, 200)
+            #chunks = self.chunk(text, 200)
 
-            for c in chunks:
-                data.append({
-                    "text":c,
+            #for c in chunks:
+            #    data.append({
+            #        "text":c,
+            #        "title": item["title"],
+            #        "category": item["categories"],
+            #        "id": item["id"]
+            #    })
+
+            data.append({
+                    "text": text,
                     "title": item["title"],
                     "category": item["categories"],
                     "id": item["id"]
@@ -37,9 +46,14 @@ class Loader:
 
     return data
 
-  def chunk(self, text, words_lim=100):
+  def chunk(self, text, words_lim=100): # not used
     words = text.split()
-    res = [" ".join(words[i:i+words_lim]) for i in range(0, len(words), words_lim)]
+    step = int(words_lim * 0.8)
+
+    res = [
+        " ".join(words[i:i+words_lim])
+        for i in range(0, len(words), step)
+    ]
     return res
 
   def visualize(self, path):
